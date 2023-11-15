@@ -25,20 +25,3 @@ function onMidiSuccess(msg: any) {
 	const [status, note, velocity] = msg.data;
 	midiMessages.push({ status, note, velocity });
 }
-
-function captureMidi() {
-	midiMessages.map((midiMessage) => {
-		const { status, note, velocity } = midiMessage;
-		console.log(`${status} ${note} ${velocity}`);
-		//convert then returned the new midi
-		convertToNotes(midiMessage);
-	});
-
-	//print the converted notes to the console
-	//resets the capture buffer to 0 after midi is captured
-	midiMessages.length = 0;
-}
-
-function convertToNotes(midiMessage: MidiData) {
-	//convert the notes
-}
