@@ -1,3 +1,6 @@
 # Midi-Capture
 
-Tool for capturing midi data if you forget to hit the record button
+A small midi capture tool written in Typescript
+* Select your midi device
+* Capture a missed take if you forget to hit record
+

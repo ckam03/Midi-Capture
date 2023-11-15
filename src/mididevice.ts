@@ -1,23 +1,45 @@
-﻿export function getMidiDevices() {
-	navigator.requestMIDIAccess().then((access) => {
-		const select = document.createElement("select");
+﻿type MidiData = {
+	status: number;
+	note: number;
+	velocity: number;
+};
 
-		access.inputs.forEach((input: MIDIInput) => {
-			let option = document.createElement("option");
-			let name = input.name as string;
+let midiMessages: MidiData[] = [];
 
-			option.value = name;
-			option.innerHTML = name;
-			select.appendChild(option);
-			
-			input.onmidimessage = (msg) => {
-				console.log(msg)
-			}
-		});
+export async function getMidiDevices(): Promise<void> {
+	const access = await navigator.requestMIDIAccess();
+	const select = document.createElement("select");
 
-		const app = document.querySelector(".device-selector");
-		app?.appendChild(select);
+	access.inputs.forEach((input: MIDIInput) => {
+		let option: HTMLOptionElement = document.createElement("option");
+		let name: string = input.name as string;
+
+		option.value = name;
+		option.innerHTML = name;
+		select.appendChild(option);
+
+		//using any here because typescript is giving msg the wrong type
+		input.onmidimessage = (msg: any) => {
+			//note status ie on off. Note/velocity are 0-127
+			const [status, note, velocity] = msg.data;
+			midiMessages.push({ status, note, velocity });
+		};
+
+		const selector = document.querySelector(".device-selector");
+		selector?.appendChild(select);
 	});
 }
 
-export function getMidiMessages() {}
+function captureMidi() {
+	midiMessages.map((midiMessage) => {
+		const { status, note, velocity } = midiMessage;
+		console.log(`${status} ${note} ${velocity}`);
+	});
+
+	midiMessages.length = 0;
+}
+
+function convertToNotes() {}
+
+const button = document.querySelector(".capture-button");
+button?.addEventListener("click", captureMidi);
