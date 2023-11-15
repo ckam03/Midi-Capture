@@ -1,10 +1,4 @@
-﻿type MidiData = {
-	status: number;
-	note: number;
-	velocity: number;
-};
-
-let midiMessages: MidiData[] = [];
+﻿let midiMessages: MidiData[] = [];
 
 export async function getMidiDevices(): Promise<void> {
 	const access = await navigator.requestMIDIAccess();
@@ -18,28 +12,33 @@ export async function getMidiDevices(): Promise<void> {
 		option.innerHTML = name;
 		select.appendChild(option);
 
-		//using any here because typescript is giving msg the wrong type
-		input.onmidimessage = (msg: any) => {
-			//note status ie on off. Note/velocity are 0-127
-			const [status, note, velocity] = msg.data;
-			midiMessages.push({ status, note, velocity });
-		};
-
 		const selector = document.querySelector(".device-selector");
 		selector?.appendChild(select);
+
+		//listens for incoming midi events
+		input.onmidimessage = onMidiSuccess;
 	});
+}
+
+//using any here because typescript is giving msg the wrong type and not giving me the data property
+function onMidiSuccess(msg: any) {
+	const [status, note, velocity] = msg.data;
+	midiMessages.push({ status, note, velocity });
 }
 
 function captureMidi() {
 	midiMessages.map((midiMessage) => {
 		const { status, note, velocity } = midiMessage;
 		console.log(`${status} ${note} ${velocity}`);
+		//convert then returned the new midi
+		convertToNotes(midiMessage);
 	});
 
+	//print the converted notes to the console
+	//resets the capture buffer to 0 after midi is captured
 	midiMessages.length = 0;
 }
 
-function convertToNotes() {}
-
-const button = document.querySelector(".capture-button");
-button?.addEventListener("click", captureMidi);
+function convertToNotes(midiMessage: MidiData) {
+	//convert the notes
+}
