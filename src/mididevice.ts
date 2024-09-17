@@ -1,4 +1,4 @@
-﻿let midiMessages: MidiData[] = [];
+﻿export const midiMessages: MidiData[] = [];
 
 export async function getMidiDevices(): Promise<void> {
 	const access = await navigator.requestMIDIAccess();
@@ -22,6 +22,7 @@ export async function getMidiDevices(): Promise<void> {
 
 //using any here because typescript is giving msg the wrong type and not giving me the data property
 function onMidiSuccess(msg: any) {
+	console.log(msg.data);
 	const [status, note, velocity] = msg.data;
 	midiMessages.push({ status, note, velocity });
 }
